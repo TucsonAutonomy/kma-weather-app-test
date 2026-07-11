@@ -11,6 +11,11 @@ export type DailyForecast = {
 
 export type ForecastResponse = {
   city: { id: string; name: string };
+  current: {
+    temperature: number | null;
+    observedAt: string;
+    source: "초단기실황" | "단기예보";
+  };
   updatedAt: string;
   forecast: DailyForecast[];
 };
@@ -39,6 +44,13 @@ type ShortItem = {
   fcstDate: string;
   fcstTime: string;
   fcstValue: string;
+};
+
+type UltraItem = {
+  category: string;
+  baseDate: string;
+  baseTime: string;
+  obsrValue: string;
 };
 
 type ApiResponse = {
@@ -83,6 +95,21 @@ function latestShortBase(now = new Date()) {
   }
 
   return { baseDate: addDays(dateKey(kst), -1), baseTime: "2300" };
+}
+
+function latestUltraBase(now = new Date()) {
+  const kst = shiftedKst(now);
+  let key = dateKey(kst);
+  let hour = kst.getUTCHours();
+
+  // 초단기실황은 매시 40분 이후 제공되므로 안전하게 45분을 기준으로 잡습니다.
+  if (kst.getUTCMinutes() < 45) hour -= 1;
+  if (hour < 0) {
+    key = addDays(key, -1);
+    hour = 23;
+  }
+
+  return { baseDate: key, baseTime: pad(hour) + "00" };
 }
 
 function latestMidBase(now = new Date()) {
@@ -145,6 +172,51 @@ function skyLabel(value: number) {
   if (value === 1) return "맑음";
   if (value === 3) return "구름많음";
   return "흐림";
+}
+
+function kstDateTimeIso(date: string, time: string) {
+  return new Date(Date.UTC(
+    Number(date.slice(0, 4)),
+    Number(date.slice(4, 6)) - 1,
+    Number(date.slice(6, 8)),
+    Number(time.slice(0, 2)) - 9,
+    Number(time.slice(2, 4)),
+  )).toISOString();
+}
+
+function parseCurrent(
+  ultraItems: UltraItem[],
+  shortItems: ShortItem[],
+  now = new Date(),
+): ForecastResponse["current"] {
+  const observation = ultraItems.find((item) => item.category === "T1H");
+  const observedTemperature = Number(observation?.obsrValue);
+
+  if (observation && Number.isFinite(observedTemperature)) {
+    return {
+      temperature: observedTemperature,
+      observedAt: kstDateTimeIso(observation.baseDate, observation.baseTime),
+      source: "초단기실황",
+    };
+  }
+
+  const nearestForecast = shortItems
+    .filter((item) => item.category === "TMP" && Number.isFinite(Number(item.fcstValue)))
+    .map((item) => ({
+      item,
+      distance: Math.abs(
+        new Date(kstDateTimeIso(item.fcstDate, item.fcstTime)).getTime() - now.getTime(),
+      ),
+    }))
+    .sort((a, b) => a.distance - b.distance)[0]?.item;
+
+  return {
+    temperature: nearestForecast ? Number(nearestForecast.fcstValue) : null,
+    observedAt: nearestForecast
+      ? kstDateTimeIso(nearestForecast.fcstDate, nearestForecast.fcstTime)
+      : now.toISOString(),
+    source: "단기예보",
+  };
 }
 
 function parseShort(items: ShortItem[], today: string): DailyForecast[] {
@@ -249,15 +321,21 @@ export async function getForecast(cityId: string): Promise<ForecastResponse> {
   if (!city) throw new Error("지원하지 않는 지역입니다.");
 
   const shortBase = latestShortBase();
+  const ultraBase = latestUltraBase();
   const midBase = latestMidBase();
   const today = dateKey(shiftedKst());
 
-  const [shortItems, landItems, tempItems] = await Promise.all([
+  const [shortItems, ultraItems, landItems, tempItems] = await Promise.all([
     requestKma("VilageFcstInfoService_2.0/getVilageFcst", {
       pageNo: 1, numOfRows: 2000, dataType: "JSON",
       base_date: shortBase.baseDate, base_time: shortBase.baseTime,
       nx: city.nx, ny: city.ny,
     }),
+    requestKma("VilageFcstInfoService_2.0/getUltraSrtNcst", {
+      pageNo: 1, numOfRows: 1000, dataType: "JSON",
+      base_date: ultraBase.baseDate, base_time: ultraBase.baseTime,
+      nx: city.nx, ny: city.ny,
+    }).catch(() => []),
     requestKma("MidFcstInfoService/getMidLandFcst", {
       pageNo: 1, numOfRows: 10, dataType: "JSON",
       regId: city.landRegId, tmFc: midBase,
@@ -268,7 +346,12 @@ export async function getForecast(cityId: string): Promise<ForecastResponse> {
     }),
   ]);
 
-  const short = parseShort(shortItems as unknown as ShortItem[], today);
+  const typedShortItems = shortItems as unknown as ShortItem[];
+  const current = parseCurrent(
+    ultraItems as unknown as UltraItem[],
+    typedShortItems,
+  );
+  const short = parseShort(typedShortItems, today);
   const mid = parseMid(landItems[0] ?? {}, tempItems[0] ?? {}, midBase);
   const merged = new Map<string, DailyForecast>();
 
@@ -283,6 +366,7 @@ export async function getForecast(cityId: string): Promise<ForecastResponse> {
 
   return {
     city: { id: cityId, name: city.name },
+    current,
     updatedAt: new Date().toISOString(),
     forecast,
   };
