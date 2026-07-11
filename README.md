@@ -13,11 +13,11 @@
 
 ## 사용하는 기상청 API
 
-공공데이터포털에서 아래 두 서비스의 활용신청이 필요합니다.
+기상청 API허브에서 단기예보와 중기예보 API 활용신청이 필요합니다.
 
-1. [기상청 단기예보 조회서비스](https://www.data.go.kr/)
+1. [기상청 API허브 단기예보](https://apihub.kma.go.kr/apiList.do?apiMov=4.+%EB%8F%99%EB%84%A4%EC%98%88%EB%B3%B4%28%EC%B4%88%EB%8B%A8%EA%B8%B0%EC%8B%A4%ED%99%A9%C2%B7%EC%B4%88%EB%8B%A8%EA%B8%B0%EC%98%88%EB%B3%B4%C2%B7%EB%8B%A8%EA%B8%B0%EC%98%88%EB%B3%B4%29+%EC%A1%B0%ED%9A%8C&seqApi=10&seqApiSub=286)
    - VilageFcstInfoService_2.0/getVilageFcst
-2. [기상청 중기예보 조회서비스](https://www.data.go.kr/data/15059468/openapi.do)
+2. [기상청 API허브 중기예보](https://apihub.kma.go.kr/apiList.do?apiMov=%EC%A4%91%EA%B8%B0%EC%98%88%EB%B3%B4%EC%9E%90%EB%A3%8C%282001%EB%85%84+2%EC%9B%94+%EC%9D%B4%ED%9B%84%29+%EC%A1%B0%ED%9A%8C&seqApi=10&seqApiSub=287)
    - MidFcstInfoService/getMidLandFcst
    - MidFcstInfoService/getMidTa
 
@@ -33,9 +33,9 @@ Codespaces 터미널에서 다음 명령을 실행합니다.
     npm install
     npm run dev
 
-.env.local에는 공공데이터포털에서 발급받은 일반 인증키 중 **Decoding 키**를 입력합니다.
+.env.local에는 기상청 API허브에서 발급받은 **인증키**를 입력합니다.
 
-    KMA_SERVICE_KEY=발급받은_Decoding_인증키
+    KMA_APIHUB_KEY=발급받은_API허브_인증키
 
 .env 파일은 .gitignore에 포함되어 있으므로 인증키가 저장소에 커밋되지 않습니다.
 
@@ -43,8 +43,8 @@ Codespaces 터미널에서 다음 명령을 실행합니다.
 
 1. Vercel에서 이 GitHub 저장소를 Import합니다.
 2. Project Settings → Environment Variables에 다음 값을 추가합니다.
-   - Name: KMA_SERVICE_KEY
-   - Value: 공공데이터포털 Decoding 인증키
+   - Name: KMA_APIHUB_KEY
+   - Value: 기상청 API허브 인증키
 3. 배포를 실행합니다.
 
 인증키에는 절대 NEXT_PUBLIC_ 접두사를 붙이지 마세요. 이 프로젝트는 서버의 /api/weather 경로에서만 키를 읽습니다.
@@ -61,6 +61,6 @@ Codespaces 터미널에서 다음 명령을 실행합니다.
 
 ## 데이터 이용 안내
 
-- 데이터 출처: 기상청, 공공데이터포털
+- 데이터 출처: 기상청 API허브
 - 중기예보는 일 2회(06시, 18시) 발표됩니다.
 - 실제 날씨는 예보와 다를 수 있으므로 중요한 일정에는 최신 기상정보와 기상특보를 함께 확인하세요.
