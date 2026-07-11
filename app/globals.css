@@ -1,14 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap");
 
 :root {
-  --ink: #17211b;
-  --muted: #6a746d;
-  --cream: #f5f2e9;
-  --paper: rgba(255, 255, 255, 0.74);
-  --green: #234e3a;
-  --lime: #dff29c;
-  --blue: #bfdbea;
-  --line: rgba(23, 33, 27, 0.12);
+  color-scheme: dark;
+  --ink: #f2f7f4;
+  --muted: #9eada4;
+  --cream: #08110d;
+  --paper: rgba(19, 32, 25, 0.82);
+  --green: #55d993;
+  --deep-green: #123c2b;
+  --lime: #c8f078;
+  --blue: #78c1df;
+  --line: rgba(226, 244, 233, 0.12);
 }
 
 * { box-sizing: border-box; }
@@ -25,8 +27,8 @@ main {
   overflow: hidden;
   position: relative;
   background:
-    linear-gradient(rgba(35, 78, 58, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(35, 78, 58, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(85, 217, 147, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(85, 217, 147, 0.045) 1px, transparent 1px),
     var(--cream);
   background-size: 36px 36px;
 }
@@ -39,11 +41,11 @@ main {
 }
 .orb-one {
   width: 420px; height: 420px; right: -120px; top: -140px;
-  background: rgba(191, 219, 234, 0.72);
+  background: rgba(71, 143, 177, 0.19);
 }
 .orb-two {
   width: 340px; height: 340px; left: -180px; top: 440px;
-  background: rgba(223, 242, 156, 0.54);
+  background: rgba(101, 164, 74, 0.17);
 }
 
 .shell {
@@ -75,7 +77,7 @@ main {
   place-items: center;
   width: 37px; height: 37px;
   color: white;
-  background: var(--green);
+  background: var(--deep-green);
   border-radius: 50% 50% 46% 54% / 54% 45% 55% 46%;
   font-family: "Gowun Dodum", sans-serif;
   font-size: 15px;
@@ -85,7 +87,7 @@ main {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.045);
   font-size: 13px;
 }
 
@@ -125,7 +127,7 @@ main {
   padding: 7px 8px 7px 16px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.64);
+  background: rgba(255, 255, 255, 0.055);
   color: var(--muted);
   font-size: 13px;
 }
@@ -136,7 +138,7 @@ main {
   border-radius: 9px;
   outline: none;
   color: white;
-  background: var(--green);
+  background: var(--deep-green);
   cursor: pointer;
 }
 
@@ -147,8 +149,8 @@ main {
   border-radius: 30px 30px 90px 30px;
   background:
     radial-gradient(circle at 85% 15%, rgba(223, 242, 156, 0.32), transparent 28%),
-    var(--green);
-  box-shadow: 0 24px 65px rgba(35, 78, 58, 0.22);
+    var(--deep-green);
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.42);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -195,7 +197,7 @@ main {
   font-size: 25px;
   font-variant-numeric: tabular-nums;
 }
-.temperature .low { color: #6c96a8; }
+.temperature .low { color: var(--blue); }
 .today-card .temperature .low { color: var(--blue); }
 .temperature .divider { opacity: 0.28; font-size: 0.7em; }
 
@@ -237,7 +239,7 @@ main {
   transform: translateY(-4px);
   box-shadow: 0 16px 35px rgba(23, 33, 27, 0.08);
 }
-.day-card.active { background: var(--lime); }
+.day-card.active { background: rgba(85, 217, 147, 0.16); border-color: rgba(85, 217, 147, 0.34); }
 .day-top { display: flex; justify-content: space-between; gap: 8px; }
 .day-index { color: var(--green); font-size: 11px; font-weight: 700; }
 .day-top h3 { margin: 5px 0 0; font-size: 17px; }
@@ -273,23 +275,23 @@ main {
   min-height: 270px;
   background: linear-gradient(
     100deg,
-    rgba(255, 255, 255, 0.42) 20%,
-    rgba(255, 255, 255, 0.82) 38%,
-    rgba(255, 255, 255, 0.42) 56%
+    rgba(255, 255, 255, 0.035) 20%,
+    rgba(255, 255, 255, 0.105) 38%,
+    rgba(255, 255, 255, 0.035) 56%
   );
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
 }
-.skeleton { margin: auto; color: rgba(255, 255, 255, 0.7); }
+.skeleton { margin: auto; color: rgba(255, 255, 255, 0.62); }
 .error-panel {
   margin: 20px 0 70px;
   padding: 30px;
-  border: 1px solid rgba(157, 74, 56, 0.22);
+  border: 1px solid rgba(255, 132, 109, 0.24);
   border-radius: 20px;
-  background: rgba(255, 238, 232, 0.7);
+  background: rgba(87, 30, 25, 0.5);
 }
 .error-panel strong { font-size: 19px; }
-.error-panel p { margin: 8px 0 0; color: #7c4a3f; }
+.error-panel p { margin: 8px 0 0; color: #f0a697; }
 .error-panel .error-help { color: var(--muted); font-size: 12px; }
 
 footer {
