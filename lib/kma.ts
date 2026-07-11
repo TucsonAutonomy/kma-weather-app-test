@@ -105,11 +105,11 @@ function itemArray(value: unknown): Record<string, unknown>[] {
 }
 
 async function requestKma(endpoint: string, params: Record<string, string | number>) {
-  const serviceKey = process.env.KMA_SERVICE_KEY;
-  if (!serviceKey) throw new Error("KMA_SERVICE_KEY 인증키가 설정되지 않았습니다.");
+  const authKey = process.env.KMA_APIHUB_KEY;
+  if (!authKey) throw new Error("KMA_APIHUB_KEY 인증키가 설정되지 않았습니다.");
 
-  const url = new URL("https://apis.data.go.kr/1360000/" + endpoint);
-  url.searchParams.set("ServiceKey", serviceKey);
+  const url = new URL("https://apihub.kma.go.kr/api/typ02/openApi/" + endpoint);
+  url.searchParams.set("authKey", authKey);
   Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, String(value)));
 
   const response = await fetch(url, { next: { revalidate: 600 } });
