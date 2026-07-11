@@ -162,7 +162,7 @@ export default function Home() {
             <strong>예보를 표시할 수 없어요.</strong>
             <p>{error}</p>
             <p className="error-help">
-              배포 환경에 KMA_SERVICE_KEY가 설정되어 있는지 확인해주세요.
+              배포 환경에 KMA_APIHUB_KEY가 설정되어 있는지 확인해주세요.
             </p>
           </section>
         ) : (
