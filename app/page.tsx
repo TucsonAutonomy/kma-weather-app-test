@@ -136,11 +136,16 @@ export default function Home() {
               <div className="current-icon" role="img" aria-label={today.weather}>
                 {weatherIcon(today.weather)}
               </div>
-              <p className="current-temp">{today.maxTemp ?? "–"}°</p>
+              <p className="current-temp">
+                {data.current?.temperature ?? today.maxTemp ?? "–"}°
+              </p>
               <p className="current-condition">{today.weather}</p>
               <p className="high-low">
                 최고:{today.maxTemp ?? "–"}°&nbsp;&nbsp; 최저:
                 {today.minTemp ?? "–"}°
+              </p>
+              <p className="observation-label">
+                {data.current?.source ?? "단기예보"} 기준
               </p>
             </>
           ) : (
